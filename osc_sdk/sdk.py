@@ -41,6 +41,7 @@ SUCCESS_CODES = {200, 201, 202, 203, 204}
 USER_AGENT = "osc_sdk " + SDK_VERSION
 
 logger = logging.getLogger("osc_sdk")
+global_cli_pretty_print = False
 
 
 CallParameters = Dict[str, Any]
@@ -765,13 +766,16 @@ def api_connect(
     )
     handler.make_request(call, **kwargs)
     if handler.response:
-        print(json.dumps(handler.response, indent=4))
+        if global_cli_pretty_print:
+            print(json.dumps(handler.response, indent=4))
+        else:
+            return handler.response
 
 
 def main():
     argc = len(sys.argv)
     argv = sys.argv
-
+    global global_cli_pretty_print
     if argc > 1:
         for i in range(1, argc):
             a = argv[i]
@@ -782,6 +786,7 @@ def main():
                 return 0
 
     logging.basicConfig(level=logging.ERROR)
+    global_cli_pretty_print = True
     fire.Fire(api_connect)
 
 
